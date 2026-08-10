@@ -1,0 +1,3 @@
+interface:
+  display_name: "Photo Motion Prompt"
+  short_description: "Creates natural Grok image-to-video prompts from uploaded photos."

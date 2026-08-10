@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirement Doc Review"
+  short_description: "Audit implementation against requirement docs"
+  default_prompt: "Use $requirement-doc-review to audit a completed or paused implementation against its Requirement Doc Tracking document and produce a delivery review report."

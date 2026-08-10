@@ -1,0 +1,4 @@
+interface:
+  display_name: "Direct Test Command Writer"
+  short_description: "Generate direct copyable test commands and save them to a file."
+  default_prompt: "Generate direct test commands and write them to a file."

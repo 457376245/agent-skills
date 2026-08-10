@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simplify Business Code"
+  short_description: "Prefer the smallest readable implementation that meets the current need."
+  default_prompt: "Use $simplify-business-code to refactor this code into the simplest implementation that still meets the current requirement."

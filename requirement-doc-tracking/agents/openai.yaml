@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirement Doc Tracking"
+  short_description: "Track requirements before and during delivery"
+  default_prompt: "Use $requirement-doc-tracking to create a project requirement tracking document before implementation, update it during delivery, and leave it ready for Requirement Doc Review."

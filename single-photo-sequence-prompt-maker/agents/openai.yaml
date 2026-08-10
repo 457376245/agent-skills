@@ -1,0 +1,3 @@
+interface:
+  display_name: "Single Photo Sequence Prompt Maker"
+  short_description: "Create before-and-after image prompts from one person photo."

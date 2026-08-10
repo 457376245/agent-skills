@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI App Project Evaluator"
+  short_description: "Evaluate AI projects for learning value"
+  default_prompt: "Use $ai-app-project-evaluator to assess this AI application project in Chinese and create a Markdown learning-value report in the project root."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirement Handoff"
+  short_description: "Create self-contained requirement and implementation handoffs"
+  default_prompt: "Use $requirement-handoff to finalize this coding requirement into a self-contained requirement document and implementation handoff, then stop."

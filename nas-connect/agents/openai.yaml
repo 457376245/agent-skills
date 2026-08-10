@@ -1,0 +1,4 @@
+interface:
+  display_name: "NAS Connect"
+  short_description: "Connect securely to the configured NAS server"
+  default_prompt: "Use $nas-connect to connect to the NAS and run a requested command."
