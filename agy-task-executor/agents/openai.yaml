@@ -1,0 +1,7 @@
+interface:
+  display_name: "AGY Task Executor"
+  short_description: "将明确任务交给 Antigravity CLI 执行并返回可审计结果"
+  default_prompt: "使用 $agy-task-executor 将已明确的任务交给 agy 执行，并返回结构化验证结果。"
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex.local/schemas/agy-task-executor-result.json",
+  "title": "AGY Task Executor Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "summary",
+    "changed_files",
+    "verification",
+    "acceptance_evidence",
+    "requirement_doc",
+    "review_target",
+    "deviations",
+    "blockers",
+    "risks"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["completed", "blocked", "failed"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "change", "acceptance_criteria"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "change": {"type": "string", "minLength": 1},
+          "acceptance_criteria": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "result", "details"],
+        "properties": {
+          "command": {"type": "string", "minLength": 1},
+          "result": {
+            "type": "string",
+            "enum": ["passed", "failed", "not_run", "blocked", "not_verified"]
+          },
+          "details": {"type": "string"}
+        }
+      }
+    },
+    "acceptance_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterion", "status", "evidence"],
+        "properties": {
+          "criterion": {"type": "string", "minLength": 1},
+          "status": {
+            "type": "string",
+            "enum": ["satisfied", "not_satisfied", "not_verified"]
+          },
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "requirement_doc": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "updated", "implementation_status", "review_status", "notes"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "updated": {"type": "boolean"},
+            "implementation_status": {
+              "type": "string",
+              "enum": ["已计划", "进行中", "已阻塞", "已完成", "TBD"]
+            },
+            "review_status": {
+              "type": "string",
+              "enum": ["不需要", "待审查", "已审查", "TBD"]
+            },
+            "notes": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "review_target": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["target", "baseline", "notes"],
+          "properties": {
+            "target": {"type": "string", "minLength": 1},
+            "baseline": {"type": ["string", "null"]},
+            "notes": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "deviations": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "blockers": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "risks": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}
