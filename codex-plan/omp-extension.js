@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 const PONYTAIL_MARKER = "PONYTAIL MODE ACTIVE — level:";
 const PLAN_STATE_ENTRY = "codex-plan-state";
 const PLAN_INSTRUCTIONS = readFileSync(new URL("./plan-prompt.md", import.meta.url), "utf8").trim();
+const PLAN_ENDED_INSTRUCTION =
+  "Codex Plan has ended. Normal execution mode is active. Do not request /codex-plan end again; execute the user's approved plan now.";
 
 export function resolvePlanState(entries) {
   if (!Array.isArray(entries)) return false;
@@ -30,6 +32,7 @@ export function removePonytailInstructions(systemPrompt) {
 
 export default function codexPlanPonytailBridge(pi) {
   let planActive = false;
+  let planJustEnded = false;
   let lastCtx = null;
 
   pi.setLabel("Codex Plan / Ponytail Bridge");
@@ -64,6 +67,7 @@ export default function codexPlanPonytailBridge(pi) {
         }
 
         setPlanActive(false, ctx);
+        planJustEnded = true;
         ctx?.ui?.notify?.("Codex Plan ended; Ponytail full is active again.", "info");
         return;
       }
@@ -98,11 +102,16 @@ export default function codexPlanPonytailBridge(pi) {
   });
 
   pi.on("before_agent_start", async (event) => {
-    if (!planActive) return;
-
     const originalPrompt = Array.isArray(event?.systemPrompt)
       ? event.systemPrompt
       : [String(event?.systemPrompt || "")];
+
+    if (!planActive) {
+      if (!planJustEnded) return;
+      planJustEnded = false;
+      return { systemPrompt: [...originalPrompt, PLAN_ENDED_INSTRUCTION] };
+    }
+
     const cleanedPrompt = removePonytailInstructions(originalPrompt);
     return { systemPrompt: [...cleanedPrompt, PLAN_INSTRUCTIONS] };
   });
