@@ -1,6 +1,6 @@
 ---
 name: "requirement-doc-tracking"
-description: "Create and maintain a Chinese requirement implementation tracking document for feature requirements only, then final-align it for later Requirement Doc Review. Use only when starting or continuing a user-facing feature requirement, product capability, business workflow, or explicitly requested requirement-tracking/docs-trail work. Do not auto-trigger for bugs, fixes, configuration changes, operational changes, investigation/analysis, code review, refactoring, dependency updates, environment setup, or simple code edits unless the user explicitly asks to create or maintain a requirement document."
+description: "Create and maintain a Chinese requirement implementation tracking document for feature requirements, and final-align fixes for findings against an existing tracked requirement. Use for new user-facing capabilities, explicit docs-trail work, or remediation of an existing Requirement Doc Review. Generic bugs, fixes, configuration changes, investigations, reviews, refactors, and simple edits do not trigger it."
 ---
 
 # Requirement Doc Tracking
@@ -15,16 +15,17 @@ Use this skill only for feature requirements:
 - Business workflow changes that need acceptance criteria.
 - Cross-service feature work where the feature contract should be documented.
 - Cases where the user explicitly asks for requirement tracking, a requirement document, a docs trail, or later requirement review.
+- Remediation of findings from an existing Requirement Doc Review when the requirement already has a tracking document.
 
 Do not auto-trigger this skill for:
 
-- Bug reports, bug fixes, regressions, or production incidents.
+- Generic bug reports, regressions, or production incidents that are not remediation of an existing tracked requirement.
 - Configuration, `.env`, port, address, credentials, deployment, or operational changes.
 - Investigation, analysis, troubleshooting, exploration, or "find why" tasks.
 - Code review, audit, verification, or acceptance review; use `requirement-doc-review` only when applicable.
-- Refactoring, cleanup, formatting, comments, dependency updates, tests-only changes, or simple code edits.
+- Refactoring, cleanup, formatting, comments, dependency updates, tests-only changes, or simple code edits without an existing tracked requirement.
 
-If a task is ambiguous, default to not using this skill and proceed with the normal coding workflow unless the user explicitly asks for requirement tracking.
+If a task is ambiguous, default to not using this skill. Existing-review remediation uses the same-turn fast path below when eligible.
 
 ## Workflow
 
@@ -33,7 +34,7 @@ If a task is ambiguous, default to not using this skill and proceed with the nor
 3. Use `references/需求文档模版.md` as the starting structure. Fill unknown details with `TBD` instead of inventing answers.
 4. Preserve the user's original request separately from later conclusions, final delivery notes, and implementation decisions.
 5. Define explicit acceptance criteria before or early in implementation. If the user has not provided them, derive the smallest verifiable criteria from the request and mark assumptions clearly.
-6. Update the document whenever the plan, scope, interfaces, database changes, risks, progress, validation status, or rollout assumptions change.
+6. Update the document whenever the plan, scope, interfaces, database changes, risks, progress, validation status, or rollout assumptions change, except for eligible same-turn remediation, which updates once after verification.
 7. Before closing the task, compare the final code and behavior with the document. Remove stale plans, capture deviations, and make the document describe what actually shipped.
 8. When the requirement is complete, paused for handoff, or ready for independent audit, keep the implementation status truthful and set only the review status to `待审查`. Fill the required review target using the Git snapshot rules below.
 9. In the final response, include the document path and confirm whether the document now matches the delivered business and technical state.
@@ -44,7 +45,7 @@ If a task is ambiguous, default to not using this skill and proceed with the nor
 - Prefer one document per user-visible requirement or tightly related change set.
 - Record both business intent and technical design; do not leave the document as code notes only.
 - Keep the original request, assumptions, acceptance criteria, and final delivery facts distinguishable.
-- Keep the document updated during execution, not only at the end.
+- Keep the document updated during execution; eligible same-turn remediation follows its explicit single-update exception.
 - If the work spans multiple repos or services, capture the dependency chain and note which side changed.
 - If the task is blocked or paused, leave the document in a state that lets the next engineer resume quickly.
 - Replace outdated statements instead of appending contradictory notes.
@@ -58,8 +59,26 @@ If a task is ambiguous, default to not using this skill and proceed with the nor
 - Set new documents to `实施状态：已计划`, `审查状态：不需要`, and `最近审查结论：未审查`.
 - For review handoff, set `审查状态：待审查` without changing `实施状态` from its truthful value (`进行中`, `已阻塞`, or `已完成`).
 - Fill `审查目标` with one of: an exact commit SHA; a PR number or URL plus its head SHA; or `未提交工作区` plus the current HEAD SHA. Fill `实现基线` only when the review must be limited to a specific diff. For multi-repository work, record these values for every repository.
-- After a review finding requires remediation, restore `实施状态：进行中` while keeping `审查状态：已审查` and the previous `最近审查结论`. Update the actual changes, validation results, risks, and deviations. Only when remediation is complete, set the truthful implementation status, record the new exact review target, and set `审查状态：待审查`; preserve the previous conclusion until the new review finishes.
+- After a review finding requires remediation, preserve the previous `审查状态` and `最近审查结论`. Use the same-turn fast path below when eligible. Otherwise restore `实施状态：进行中`, update actual changes and validation records during execution, and only set `审查状态：待审查` after remediation completes.
 - Do not silently weaken the requirement or acceptance criteria to satisfy review findings.
+
+### Same-turn fast remediation
+
+Use this path only when all conditions hold:
+
+- The finding, root cause, affected contract, and target files are already explicit.
+- The change stays in one cohesive implementation path and does not alter a public interface, state ownership, storage contract, database schema, or deployment topology.
+- No pause, cross-turn handoff, or delegated implementation is needed.
+- One bounded validation pass can prove the reachable behavior.
+
+For eligible remediation:
+
+1. Do not write an intermediate `实施状态：进行中`.
+2. Implement and validate first.
+3. Update the tracking document exactly once after validation with the actual files, behavior, commands, results, and remaining unverified external items.
+4. Set the truthful `实施状态`, set `审查状态：待审查`, preserve the previous `最近审查结论`, and refresh the exact review target.
+
+If work becomes blocked, delegated, or crosses a turn, leave the fast path immediately and record `实施状态：进行中` or `已阻塞` before handoff.
 
 ## Legacy status compatibility
 
