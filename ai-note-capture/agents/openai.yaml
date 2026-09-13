@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI Note Capture"
-  short_description: "Capture AI engineering knowledge as linked Obsidian notes"
-  default_prompt: "Use $ai-note-capture to turn discussed AI knowledge into linked Obsidian notes."

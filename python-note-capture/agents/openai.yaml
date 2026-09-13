@@ -1,4 +1,0 @@
-interface:
-  display_name: "Python Note Capture"
-  short_description: "将代码讨论中的 Python 知识点沉淀为 Obsidian 笔记"
-  default_prompt: "Use $python-note-capture to turn discussed Python code points into Obsidian notes."
