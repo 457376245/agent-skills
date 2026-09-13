@@ -1,0 +1,4 @@
+interface:
+  display_name: "OMP Requirement Doc Tracking"
+  short_description: "Track requirements before and during delivery"
+  default_prompt: "Use $omp-requirement-doc-tracking to create a project requirement tracking document before implementation, update it during delivery, and leave it ready for OMP Requirement Doc Review."
