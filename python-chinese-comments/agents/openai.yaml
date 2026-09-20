@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python ????"
+  short_description: "?? Python ????????????? UTF-8 ??"
+  default_prompt: "Use $python-chinese-comments to add Simplified Chinese comments to this Python code without changing logic."
