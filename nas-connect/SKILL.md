@@ -30,8 +30,8 @@ ssh -p 6702 root@103.73.67.112 "<remote-command>"
 ```
 
 - Public endpoint uses key-based SSH authentication (`103.73.67.112:6702`). Password login is disabled on the public gateway.
-- If connecting via LAN endpoint (`192.168.31.101:22`) prompts for password, enter `19980918.` through the interactive terminal. Never place it in the command line, logs, or responses.
+- Prefer key-based SSH authentication. Never store, request, print, or place a password in a command, log, skill, or response. If interactive authentication is required, ask the user to complete it directly in their terminal.
 - Fall back only for a LAN connection or routing failure. Do not bypass authentication failures or host-key warnings by switching endpoints.
 - Preserve host-key checking. Stop and warn the user if the saved host key changes.
-- Confirm the target and explain impact before destructive or irreversible remote operations.
+- Remote writes, restarts, deletions, deployments, and other external changes require explicit authorization in the current request.
 - Report the command result and distinguish local failures from remote failures.
