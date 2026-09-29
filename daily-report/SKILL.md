@@ -1,10 +1,10 @@
 ---
 name: daily-report
 description: |
-  日报助手：从一个或多个 Git 项目收集指定作者的 commit，拆解为人天工作内容并填入日报文件。
+  日报助手：从 Git 项目收集指定作者的 commit，拆解为人天工作内容并填入日报文件。
   TRIGGER when: 用户要求填写日报、提交日报、拆解 commit 为日报、生成日报内容，
   或提到 "日报"、"daily report"、"人天" 等关键词。
-  功能：(1) 从多个项目筛选当月有效 commit (2) 检查/创建当月日报文件 (3) 校验 commit 是否已处理（防重复）
+  功能：(1) 从项目筛选当月有效 commit (2) 检查/创建当月日报文件 (3) 校验 commit 是否已处理（防重复）
   (4) 分析 commit diff 估算人天数 (5) 将工作内容按日期分点填入 (6) 日报填满时均匀重排所有内容。
   日报路径：E:\ZHONGZHAI\docs\日报\{YYYY-MM}日报.txt
   Commit 记录：E:\ZHONGZHAI\docs\日报\{YYYY-MM}日报-commits.txt
@@ -17,16 +17,15 @@ description: |
 ### 1. 接收用户输入
 
 默认项目：
-- `E:\ZHONGZHAI\DQ_Project\dq-ai`
-- `E:\ZHONGZHAI\DQ_Project\dq-info-agent`
+- `E:\ZHONGZHAI\yingdeng_project\ccdc-cfs-YDCBS-CB_CIS-AP-dev_20261023`
 
-用户可为每个项目提供 commit hash、hash 范围（如 `abc123..def456`）或分支名。未提供 commit 信息时，收集默认项目中提交时间位于当前自然月的 commit。
+用户可提供 commit hash、hash 范围（如 `abc123..def456`）或分支名。未提供 commit 信息时，收集该项目中提交时间位于当前自然月的 commit。
 
-用户可显式增加、移除或替换项目；否则直接使用上述默认项目，不再询问仓库位置。开始处理前，通过 `AskUserQuestion` 展示项目及各自的 commit 范围并确认。
+直接使用上述默认项目，不再询问仓库位置。开始处理前，通过 `AskUserQuestion` 展示项目及 commit 范围并确认。
 
 ### 2. 收集并过滤 commit
 
-分别解析每个项目的候选 commit，再按以下顺序过滤：
+解析该项目的候选 commit，再按以下顺序过滤：
 
 1. commit 作者名必须精确等于 `huangjianghui`，使用 `%an` 判断
 2. 完整 commit message（`%B`）包含 `local` 时跳过，匹配时忽略大小写
@@ -34,7 +33,7 @@ description: |
 
 向用户汇总每个被跳过的 commit 及原因。禁止分析、填写或记录不符合上述条件的 commit。
 
-未指定 commit 信息时，当前自然月的时间范围为当月 1 日 00:00:00（含）至下月 1 日 00:00:00（不含）。分别在两个默认项目中收集该范围内的 commit，不得使用当前分支限制遗漏其他本地分支可达的提交；合并相同 hash 后再过滤。
+未指定 commit 信息时，当前自然月的时间范围为当月 1 日 00:00:00（含）至下月 1 日 00:00:00（不含）。在该项目中收集该范围内的 commit，不得使用当前分支限制遗漏其他本地分支可达的提交；合并相同 hash 后再过滤。
 
 若过滤后没有可处理的 commit，直接结束，不修改日报和 Commit 记录文件。
 
@@ -166,7 +165,7 @@ git -C <repo_path> diff <commit_range>
 
 - 所有文件操作前通过 `AskUserQuestion` 向用户确认
 - 仅处理作者名精确为 `huangjianghui` 且 commit message 不包含 `local`（忽略大小写）的 commit
-- 两个默认项目共享去重记录；只有日报成功写入后才能记录对应 commit
+- 只有日报成功写入后才能记录对应 commit
 - 允许填写未来日期，但绝不跨越当前自然月
 - 日报文件编码为 UTF-8
 - 节假日参考文件位于 `references/holidays-{YYYY}.md`，如当年文件不存在需提醒用户创建
