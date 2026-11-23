@@ -1,6 +1,6 @@
 ---
 name: nas-connect
-description: Connect to and operate the configured NAS/server over SSH as root, preferring the LAN endpoint 192.168.31.101:22 and falling back to 103.73.67.112:6702 when the LAN endpoint is unreachable. Use when the user asks to connect to the NAS, inspect the remote server, transfer files, check services or storage, or run commands on this specific host.
+description: Connect to and operate the configured NAS/server over SSH as root, preferring the LAN endpoint 192.168.31.101:22 and falling back to the Osaka VPS ProxyJump gateway (vps -> 127.0.0.1:6702) when the LAN endpoint is unreachable. Use when the user asks to connect to the NAS, inspect the remote server, transfer files, check services or storage, or run commands on this specific host.
 ---
 
 # NAS Connect
@@ -17,19 +17,19 @@ For a single command, append a safely quoted remote command:
 ssh root@192.168.31.101 "<remote-command>"
 ```
 
-If the LAN endpoint cannot be reached, retry through the public endpoint:
+If the LAN endpoint cannot be reached, retry directly through the Osaka VPS `ProxyJump` gateway (without the local proxy):
 
 ```powershell
-ssh -p 6702 root@103.73.67.112
+ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o ProxyJump=vps -o HostKeyAlias=nas-osaka-frp -o StrictHostKeyChecking=yes -p 6702 root@127.0.0.1
 ```
 
 For a single command through the public endpoint:
 
 ```powershell
-ssh -p 6702 root@103.73.67.112 "<remote-command>"
+ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o ProxyJump=vps -o HostKeyAlias=nas-osaka-frp -o StrictHostKeyChecking=yes -p 6702 root@127.0.0.1 "<remote-command>"
 ```
 
-- Public endpoint uses key-based SSH authentication (`103.73.67.112:6702`). Password login is disabled on the public gateway.
+- Public endpoint uses key-based SSH authentication via the Osaka VPS `ProxyJump` (`vps` -> `127.0.0.1:6702`, `HostKeyAlias nas-osaka-frp`), connecting directly without a local HTTP proxy. Password login is disabled on the public gateway.
 - Prefer key-based SSH authentication. Never store, request, print, or place a password in a command, log, skill, or response. If interactive authentication is required, ask the user to complete it directly in their terminal.
 - Fall back only for a LAN connection or routing failure. Do not bypass authentication failures or host-key warnings by switching endpoints.
 - Preserve host-key checking. Stop and warn the user if the saved host key changes.
